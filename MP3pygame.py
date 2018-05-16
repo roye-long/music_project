@@ -1,13 +1,15 @@
 # -*- coding=utf8 -*-
 
 import re,time,urllib,requests,os,sys,json,random,pygame
-
+import eyed3
 from tkinter import  *
 from tkinter import ttk
 import  tkinter.messagebox  as tkMessageBox
 from PIL import Image,ImageTk
 import threading
 global musicdic,Page
+global second
+second=0
 musicdic={}
 Page=[]
 pygame.mixer.init()
@@ -50,14 +52,17 @@ def playmp3(name,dis):
     song_dic=json.loads(html)
     var3.set(name)
     
-    if 'lyric' in song_dic['lrc']:
+    try :
         lrc=song_dic['lrc']['lyric']
-    else:
-        lrc=''
+    except:
+        lrc='暂无歌词'
     for word in lrc.split('\n'):
         word=re.sub('\[.*?\]','',word)
         Lb3.insert(END,' '*10+word)
     mp3=pygame.mixer.music.load(path)
+    xx = eyed3.load(path)
+    
+    second=xx.info.time_secs
     im=Image.open(picpath)
     im=im.resize((300, 480),Image.ANTIALIAS)  
     bm2 = ImageTk.PhotoImage(im)
@@ -71,40 +76,49 @@ def playmp3(name,dis):
 def listOpenMusic():
        if  pygame.mixer.music.get_busy():
            pygame.mixer.music.stop()
+           second=0
        count=Lb2.size()
        ct=Lb.size()
        if count==0:
            tkMessageBox.showinfo('提示','历史播放列表为空,请先添加播放列表')
        else:
            #tkinter.messagebox.showinfo('列表播放','开始列表播放')
+           for i in range(count):
            
-           while not pygame.mixer.music.get_busy():
-               for i in range(count):
-                   if not pygame.mixer.music.get_busy():
-                       name=Lb2.get(i)
-                 
-                       var2.set(name)
-                       
-                       #download(musicdic[name])
-                       playmp3(name,musicdic[name])
+               name=Lb2.get(i)
+         
+               var2.set(name)
+               if not pygame.mixer.music.get_busy():
+                  playmp3(name,musicdic[name])
+                  time.sleep(second)
 def randOpenMusic():
        if  pygame.mixer.music.get_busy():
            pygame.mixer.music.stop()
+           second=0
        count=Lb2.size()
        if count==0:
            tkMessageBox.showinfo('提示','历史播放列表为空,请先添加播放列表')
        else:
            #tkinter.messagebox.showinfo('列表播放','开始列表播放')
-        
-           while not pygame.mixer.music.get_busy():
-               i=random.randint(1,count)-1
+           while 1:
+               if not pygame.mixer.music.get_busy():
+                   i=random.randint(1,count)-1
 
-               name=Lb2.get(i)
+                   name=Lb2.get(i)
 
-               var2.set(name)
-                   
-               #download(musicdic[name])
-               playmp3(name,musicdic[name])
+                   var2.set(name)
+                       
+                   #download(musicdic[name])
+                   playmp3(name,musicdic[name])
+                   time.sleep(second)
+def randplay():
+       rand = threading.Timer(1, randOpenMusic)
+       rand.start()
+def listplay():
+    LIST=threading.Timer(1, listOpenMusic)
+    LIST.start()
+
+
         
 def oldMusic():
     oldList=[]
@@ -289,6 +303,7 @@ class MusicButton(Frame):
                                       bg="blue",  
                                       fg="white",  
                                       font=("华文琥珀", 8))
+        self.button6.pack(side=LEFT)
         
 
         
@@ -371,10 +386,10 @@ B.pack()
 BOTT=Frame(FR)
 BOTT.pack(side=TOP,fill=Y)
 
-BL=Button(BOTT,text='列表顺序播放',fg='green',command=listOpenMusic)
+BL=Button(BOTT,text='列表顺序播放',fg='green',command=listplay)
 BL.pack(side=LEFT)
 
-BL=Button(BOTT,text='列表随机播放',fg='green',command=randOpenMusic)
+BL=Button(BOTT,text='列表随机播放',fg='green',command=randplay)
 BL.pack(side=LEFT)
 
 
