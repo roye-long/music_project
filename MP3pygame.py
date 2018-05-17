@@ -81,12 +81,29 @@ def listOpenMusic():
        ct=Lb.size()
        if count==0:
            tkMessageBox.showinfo('提示','历史播放列表为空,请先添加播放列表')
+           i=0
+           while 1:
+               print(i)
+               if i>Lb.size():
+                   i=0
+               name=Lb.get(i)
+               i+=1
+               var2.set(name)
+               if not pygame.mixer.music.get_busy():
+                  second=playmp3(name,musicdic[name])
+               else:
+                   break
+               time.sleep(second)
        else:
            #tkinter.messagebox.showinfo('列表播放','开始列表播放')
-           for i in range(count):
+           i=0
+           while 1:
                print(i)
+               if i>Lb.size():
+                   i=0
+               
                name=Lb2.get(i)
-         
+               i+=1
                var2.set(name)
                if not pygame.mixer.music.get_busy():
                   second=playmp3(name,musicdic[name])
@@ -104,6 +121,16 @@ def randOpenMusic():
        count=Lb2.size()
        if count==0:
            tkMessageBox.showinfo('提示','历史播放列表为空,请先添加播放列表')
+           if not pygame.mixer.music.get_busy():
+                   
+                   i=random.randint(1,count)-1
+
+                   name=Lb.get(i)
+
+                   var2.set(name)
+                       
+                   #download(musicdic[name])
+                   second=playmp3(name,musicdic[name])
        else:
            #tkinter.messagebox.showinfo('列表播放','开始列表播放')
                if not pygame.mixer.music.get_busy():
