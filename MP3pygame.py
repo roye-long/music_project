@@ -1,15 +1,14 @@
+
 # -*- coding=utf8 -*-
 
-import re,time,urllib,requests,os,sys,json,random,pygame
-import eyed3
+import re,time,urllib,requests,os,sys,json,random,pygame,eyed3
+
 from tkinter import  *
 from tkinter import ttk
 import  tkinter.messagebox  as tkMessageBox
 from PIL import Image,ImageTk
 import threading
 global musicdic,Page
-global second
-second=0
 musicdic={}
 Page=[]
 pygame.mixer.init()
@@ -38,6 +37,7 @@ def playmp3(name,dis):
     songurl=dis[2]
     if pygame.mixer.music.get_busy():
         pygame.mixer.music.stop()
+        second=0
     try:
         path=os.path.join('./temp/'+'1.mp3')
         picpath=os.path.join('./temp/'+'1.jpg')
@@ -60,8 +60,7 @@ def playmp3(name,dis):
         word=re.sub('\[.*?\]','',word)
         Lb3.insert(END,' '*10+word)
     mp3=pygame.mixer.music.load(path)
-    xx = eyed3.load(path)
-    
+    xx= eyed3.load(path)
     second=xx.info.time_secs
     im=Image.open(picpath)
     im=im.resize((300, 480),Image.ANTIALIAS)  
@@ -69,6 +68,7 @@ def playmp3(name,dis):
     piclabel.configure(image=bm2)
     piclabel.bm2=bm2
     pygame.mixer.music.play()
+    return second
     
     
 
@@ -89,12 +89,13 @@ def listOpenMusic():
          
                var2.set(name)
                if not pygame.mixer.music.get_busy():
-                  playmp3(name,musicdic[name])
-                  time.sleep(second)
+                  second=playmp3(name,musicdic[name])
+               time.sleep(second)
+                  
+                
 def randOpenMusic():
        if  pygame.mixer.music.get_busy():
            pygame.mixer.music.stop()
-           second=0
        count=Lb2.size()
        if count==0:
            tkMessageBox.showinfo('提示','历史播放列表为空,请先添加播放列表')
@@ -102,6 +103,7 @@ def randOpenMusic():
            #tkinter.messagebox.showinfo('列表播放','开始列表播放')
            while 1:
                if not pygame.mixer.music.get_busy():
+                   
                    i=random.randint(1,count)-1
 
                    name=Lb2.get(i)
@@ -110,7 +112,8 @@ def randOpenMusic():
                        
                    #download(musicdic[name])
                    playmp3(name,musicdic[name])
-                   time.sleep(second)
+
+                   
 def randplay():
        rand = threading.Timer(1, randOpenMusic)
        rand.start()
@@ -141,7 +144,7 @@ def search():
             #Lb.delete(first=0,last=Lb.size())
             name=E.get()
             
-            firstUrl = "http://s.music.163.com/search/get/?type=1&s={}&limit=10".format(name)
+            firstUrl = "http://s.music.163.com/search/get/?type=1&s={}&limit=100".format(name)
             
             #print (firstUrl)
            
