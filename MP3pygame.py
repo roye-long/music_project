@@ -14,10 +14,11 @@ Page=[]
 pygame.mixer.init()
 
 def ClickMusic(event):
+
     try :
       selectname=Lb.get(Lb.curselection())
           
-      var2.set(selectname)
+
       addoldMusic()
       #download(musicdic[selectname],str(Lb.curselection()))
       #download(musicdic[selectname])
@@ -25,7 +26,7 @@ def ClickMusic(event):
     except :
       selectname=Lb2.get(Lb2.curselection())
 
-      var2.set(selectname)
+
       addoldMusic()
       #download(musicdic[selectname],str(Lb.curselection()))
       #download(musicdic[selectname])
@@ -51,6 +52,7 @@ def playmp3(name,dis):
     html=requests.get(songurl).text
     song_dic=json.loads(html)
     var3.set(name)
+    var2.set(name)
     
     try :
         lrc=song_dic['lrc']['lyric']
@@ -83,34 +85,37 @@ def listOpenMusic():
            tkMessageBox.showinfo('提示','历史播放列表为空,请先添加播放列表')
            i=0
            while 1:
-               print(i)
-               if i>Lb.size():
+               if i>=Lb.size():
                    i=0
+               print(i)
                name=Lb.get(i)
                i+=1
-               var2.set(name)
+          
                if not pygame.mixer.music.get_busy():
-                  second=playmp3(name,musicdic[name])
-               else:
-                   break
+                  try:
+                      second=playmp3(name,musicdic[name])
+                  except:
+                      continue
+            
                time.sleep(second)
        else:
            #tkinter.messagebox.showinfo('列表播放','开始列表播放')
            i=0
            while 1:
-               print(i)
-               if i>Lb.size():
-                   i=0
                
+               if i>=Lb2.size():
+                   i=0
+               print(i)
                name=Lb2.get(i)
                i+=1
-               var2.set(name)
+     
                if not pygame.mixer.music.get_busy():
-                  second=playmp3(name,musicdic[name])
-               else:
-                   break
+                  try:
+                      second=playmp3(name,musicdic[name])
+                  except:
+                      continue
                time.sleep(second)
-       global List
+       
        LIST = threading.Timer(1, listOpenMusic)
        LIST.start()
                   
@@ -127,10 +132,13 @@ def randOpenMusic():
 
                    name=Lb.get(i)
 
-                   var2.set(name)
+            
                        
                    #download(musicdic[name])
-                   second=playmp3(name,musicdic[name])
+                   try:
+                       second=playmp3(name,musicdic[name])
+                   except:
+                       second=0
        else:
            #tkinter.messagebox.showinfo('列表播放','开始列表播放')
                if not pygame.mixer.music.get_busy():
@@ -139,18 +147,23 @@ def randOpenMusic():
 
                    name=Lb2.get(i)
 
-                   var2.set(name)
+          
                        
                    #download(musicdic[name])
-                   second=playmp3(name,musicdic[name])
-       global rand
+                   try:
+                       second=playmp3(name,musicdic[name])
+                   except:
+                       second=0
+       
        rand = threading.Timer(second, randOpenMusic)
        rand.start()
                    
 def randplay():
+       global rand
        rand = threading.Timer(0, randOpenMusic)
        rand.start()
 def listplay():
+    global LIST
     LIST=threading.Timer(0, listOpenMusic)
     LIST.start()
 
@@ -248,6 +261,7 @@ class section():
         if savedir:
             tkMessageBox.showinfo('提示','下载完成')
     def play(self):
+  
         try :
               selectname=Lb.get(Lb.curselection())     
         except  :
@@ -255,9 +269,9 @@ class section():
         url=musicdic[selectname]
         if selectname not in Lb2.get(0,END):
             Lb2.insert(END,selectname)
-        var2.set(selectname)
         playmp3(selectname,url)
     def nextmusic(self):
+     
         size=Lb2.size()
               
         i=random.randint(1,size)-1
@@ -272,6 +286,11 @@ class section():
             if music not in Lb2.get(first=0, last=Lb2.size()-1):
               #print(Lb2.get(first=0, last=Lb2.size()-1))
               Lb2.insert(END,music)
+    def delMusic(self):
+        try :
+              Lb.delete(Lb.curselection())     
+        except  :
+              Lb2.delete(Lb2.curselection())
         
 
 section = section()
@@ -404,6 +423,8 @@ menu.add_separator()
 menu.add_command(label="下载该歌曲",command=section.dowload)
 menu.add_separator()
 menu.add_command(label="添加至播放列表",command=section.addMusic)
+menu.add_separator()
+menu.add_command(label="从列表移除",command=section.delMusic)
 
 
 
@@ -436,7 +457,7 @@ frameR = Frame(FR)
 frameR.pack()
 bot=MusicButton(frameR)
 slider = Scale(FR,label='音量',from_ =0, to = 100,orient=HORIZONTAL, command = setVolume)
-slider.set(20)
+slider.set(50)
 slider.pack(side=BOTTOM)
 
 
