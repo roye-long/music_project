@@ -58,7 +58,7 @@ def playmp3(name,dis):
         lrc='暂无歌词'
     for word in lrc.split('\n'):
         word=re.sub('\[.*?\]','',word)
-        Lb3.insert(END,' '*10+word)
+        Lb3.insert(END,word)
     mp3=pygame.mixer.music.load(path)
     xx= eyed3.load(path)
     second=xx.info.time_secs
@@ -84,13 +84,18 @@ def listOpenMusic():
        else:
            #tkinter.messagebox.showinfo('列表播放','开始列表播放')
            for i in range(count):
-           
+               print(i)
                name=Lb2.get(i)
          
                var2.set(name)
                if not pygame.mixer.music.get_busy():
                   second=playmp3(name,musicdic[name])
+               else:
+                   break
                time.sleep(second)
+       global List
+       LIST = threading.Timer(1, listOpenMusic)
+       LIST.start()
                   
                 
 def randOpenMusic():
@@ -101,7 +106,6 @@ def randOpenMusic():
            tkMessageBox.showinfo('提示','历史播放列表为空,请先添加播放列表')
        else:
            #tkinter.messagebox.showinfo('列表播放','开始列表播放')
-           while 1:
                if not pygame.mixer.music.get_busy():
                    
                    i=random.randint(1,count)-1
@@ -111,14 +115,16 @@ def randOpenMusic():
                    var2.set(name)
                        
                    #download(musicdic[name])
-                   playmp3(name,musicdic[name])
-
+                   second=playmp3(name,musicdic[name])
+       global rand
+       rand = threading.Timer(second, randOpenMusic)
+       rand.start()
                    
 def randplay():
-       rand = threading.Timer(1, randOpenMusic)
+       rand = threading.Timer(0, randOpenMusic)
        rand.start()
 def listplay():
-    LIST=threading.Timer(1, listOpenMusic)
+    LIST=threading.Timer(0, listOpenMusic)
     LIST.start()
 
 
@@ -325,7 +331,8 @@ class MusicButton(Frame):
     def func4(self):  
         section.nextmusic()
         #labvar.set('下一曲')
-    def func5(self):  
+    def func5(self):
+       
         pygame.mixer.music.stop()
         #labvar.set('停止播放')
     def func6(self):
