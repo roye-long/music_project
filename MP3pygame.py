@@ -9,6 +9,8 @@ import  tkinter.messagebox  as tkMessageBox
 from PIL import Image,ImageTk
 import threading
 global musicdic,Page
+
+#Playing=True
 musicdic={}
 Page=[]
 pygame.mixer.init()
@@ -74,7 +76,6 @@ def playmp3(name,dis):
     
     
 
-    
 def listOpenMusic():
        if  pygame.mixer.music.get_busy():
            pygame.mixer.music.stop()
@@ -84,41 +85,38 @@ def listOpenMusic():
        if count==0:
            tkMessageBox.showinfo('提示','历史播放列表为空,请先添加播放列表')
            i=0
-           while 1:
-               if i>=Lb.size():
+           while Playing:
+              #print(Playing)
+              if i>=Lb.size():
                    i=0
-               print(i)
-               name=Lb.get(i)
-               i+=1
-          
-               if not pygame.mixer.music.get_busy():
-                  try:
-                      second=playmp3(name,musicdic[name])
-                  except:
-                      continue
-            
-               time.sleep(second)
+              if pygame.mixer.music.get_busy():
+                  break
+              name=Lb.get(i)
+    
+              i+=1
+              try:
+                  second=playmp3(name,musicdic[name])
+              except:
+                  continue
+              time.sleep(second)
        else:
            #tkinter.messagebox.showinfo('列表播放','开始列表播放')
            i=0
-           while 1:
-               
-               if i>=Lb2.size():
+           
+           while Playing:
+              #print(Playing)
+              if i>=Lb.size():
                    i=0
-               print(i)
-               name=Lb2.get(i)
-               i+=1
-     
-               if not pygame.mixer.music.get_busy():
-                  try:
-                      second=playmp3(name,musicdic[name])
-                  except:
-                      continue
-               time.sleep(second)
-       
-       LIST = threading.Timer(1, listOpenMusic)
-       LIST.start()
-                  
+              if pygame.mixer.music.get_busy():
+                  break
+              name=Lb.get(i)
+    
+              i+=1
+              try:
+                  second=playmp3(name,musicdic[name])
+              except:
+                  continue
+              time.sleep(second)
                 
 def randOpenMusic():
        if  pygame.mixer.music.get_busy():
@@ -159,11 +157,13 @@ def randOpenMusic():
        rand.start()
                    
 def randplay():
-       global rand
+       global rand,Playing
+       Playing=True
        rand = threading.Timer(0, randOpenMusic)
        rand.start()
 def listplay():
-    global LIST
+    global LIST,Playing
+    Playing=True
     LIST=threading.Timer(0, listOpenMusic)
     LIST.start()
 
@@ -378,8 +378,14 @@ class MusicButton(Frame):
         section.nextmusic()
         #labvar.set('下一曲')
     def func5(self):
-       
-        pygame.mixer.music.stop()
+        global Playing
+        try:
+            LIST.cancel()
+            Playing=False
+            pygame.mixer.music.stop()
+        except:
+            rand.cancel()
+            pygame.mixer.music.stop()   
         #labvar.set('停止播放')
     def func6(self):
         pygame.mixer.music.rewind()
