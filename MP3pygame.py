@@ -90,6 +90,7 @@ def listOpenMusic():
               if i>=Lb.size():
                    i=0
               if pygame.mixer.music.get_busy():
+                  print(Playing)
                   break
               name=Lb.get(i)
     
@@ -98,25 +99,25 @@ def listOpenMusic():
                   second=playmp3(name,musicdic[name])
               except:
                   continue
-              time.sleep(second)
+              time.sleep(second+2)
        else:
            #tkinter.messagebox.showinfo('列表播放','开始列表播放')
            i=0
            
            while Playing:
               #print(Playing)
-              if i>=Lb.size():
+              if i>=Lb2.size():
                    i=0
               if pygame.mixer.music.get_busy():
                   break
-              name=Lb.get(i)
+              name=Lb2.get(i)
     
               i+=1
               try:
                   second=playmp3(name,musicdic[name])
               except:
                   continue
-              time.sleep(second)
+              time.sleep(second+2)
                 
 def randOpenMusic():
        if  pygame.mixer.music.get_busy():
@@ -153,7 +154,7 @@ def randOpenMusic():
                    except:
                        second=0
        
-       rand = threading.Timer(second, randOpenMusic)
+       rand = threading.Timer(second+2, randOpenMusic)
        rand.start()
                    
 def randplay():
