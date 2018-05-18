@@ -123,11 +123,12 @@ def randOpenMusic():
        if  pygame.mixer.music.get_busy():
            pygame.mixer.music.stop()
        count=Lb2.size()
+       ct=Lb.size()
        if count==0:
-           tkMessageBox.showinfo('提示','历史播放列表为空,请先添加播放列表')
+           #tkMessageBox.showinfo('提示','历史播放列表为空,请先添加播放列表')
            if not pygame.mixer.music.get_busy():
                    
-                   i=random.randint(1,count)-1
+                   i=random.randint(1,ct)-1
 
                    name=Lb.get(i)
 

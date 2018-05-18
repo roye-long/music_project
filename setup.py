@@ -2,8 +2,8 @@ import sys  ,os
 from cx_Freeze import setup, Executable
 
 
-os.environ['TCL_LIBRARY'] = "E:\\soft\\Python\\Python36-32\\tcl\\tcl8.6"
-os.environ['TK_LIBRARY'] = "E:\\soft\\Python\\Python36-32\\tcl\\tk8.6"
+os.environ['TCL_LIBRARY'] = "D:\\Python34\\tcl\\tcl8.6"
+os.environ['TK_LIBRARY'] = "D:\\Python34\\tcl\\tk8.6"
 
 base = None 
 if sys.platform == "win32": 
@@ -16,9 +16,9 @@ description = "MyApp",
 options = {  
                 'build_exe':   
                         {
-                "include_files":["./temp",'E:\\soft\\Python\\Python36-32\\DLLs\\tcl86t.dll', 'E:\\soft\\Python\\Python36-32\\DLLs\\tk86t.dll'],
+                "include_files":["./temp",'D:\\Python34\\DLLs\\tcl86t.dll', 'D:\\Python34\\DLLs\\tk86t.dll'],
                
-              "packages": ["idna","PIL","re","time","urllib","requests","os","sys","json","random","pygame","tkinter","threading"]  
+              "packages": ["idna","PIL","re","time","urllib","requests","os","sys","json","random","pygame","tkinter","threading","eyed3"]  
                               
                             }  
                   
